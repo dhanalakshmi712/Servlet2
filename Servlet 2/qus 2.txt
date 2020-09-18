@@ -1,0 +1,128 @@
+LoginServlet
+
+package com.pack;
+
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+
+import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+/**
+ * Servlet implementation class LoginServlet
+ */
+@WebServlet("/LoginServlet")
+public class LoginServlet extends HttpServlet {
+	private static final long serialVersionUID = 1L;
+       
+    /**
+     * @see HttpServlet#HttpServlet()
+     */
+    public LoginServlet() {
+        super();
+        // TODO Auto-generated constructor stub
+    }
+
+	/**
+	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
+	 */
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		
+	}
+
+	/**
+	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
+	 */
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		response.setContentType("text/html");
+		PrintWriter pw=response.getWriter();
+		String uname=request.getParameter("uname");
+		String pass=request.getParameter("pass");
+		Connection con=null;
+		try
+		{
+			Class.forName("com.mysql.jdbc.Driver");
+			con=DriverManager.getConnection("jdbc:mysql://localhost:3306/User","root","root");
+			PreparedStatement ps=con.prepareStatement("select * from users where uname=? and pass=?");
+			ps.setString(1, uname);
+			ps.setString(2,pass);
+			ResultSet rs=ps.executeQuery();
+			if(rs.next())
+			{
+				RequestDispatcher rd=request.getRequestDispatcher("/success1.html");
+				rd.forward(request,response);
+			}
+			else
+			{
+				RequestDispatcher rd=request.getRequestDispatcher("/error.html");
+				rd.forward(request, response);
+			}
+			
+		}
+		catch(Exception e)
+		{
+			System.out.println("e");
+		}
+		
+		
+	}
+
+}
+
+log.html
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Insert title here</title>
+</head>
+<body>
+<form method="post" action="http://localhost:8086/Demo/LoginServlet">
+UserName:
+<input type="text" name="uname">
+Password:
+<input type="password" name="pass">
+<input type="submit" value="SignIn">
+<input type="submit" value="Logout">
+</body>
+</html>
+ 
+
+ success1.html
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Insert title here</title>
+</head>
+<body>
+Validated successfully
+</body>
+</html>
+
+error.html
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Insert title here</title>
+</head>
+<body>
+Validation is not successfull
+</body>
+</html>
+
+Database
+create database user;
+use user;
+create table users (uname varchar(10), pass char(10));
+ insert into users (uname,pass) values(dhana,rajan);

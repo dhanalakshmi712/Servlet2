@@ -1,0 +1,182 @@
+UserServlet
+package com.pack;
+
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.util.*;
+import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+
+/**
+ * Servlet implementation class UserServlet
+ */
+@WebServlet("/UserServlet")
+public class UserServlet extends HttpServlet {
+	private static final long serialVersionUID = 1L;
+       
+    /**
+     * @see HttpServlet#HttpServlet()
+     */
+    public UserServlet() {
+        super();
+        // TODO Auto-generated constructor stub
+    }
+
+	/**
+	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
+	 */
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		
+	}
+
+	/**
+	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
+	 */
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		response.setContentType("text/html");
+		PrintWriter pw=response.getWriter();
+		String fname=request.getParameter("fname");
+		String lname=request.getParameter("lname");
+		String addr=request.getParameter("addr");
+		String email=request.getParameter("mail");
+		String city=request.getParameter("city");
+		String state=request.getParameter("state");
+		String pname=request.getParameter("pname");
+		String pphone=request.getParameter("phone");
+		String ptype=request.getParameter("ptype");
+		int page=Integer.parseInt(request.getParameter("page"));
+		Connection con=null;
+		try
+		{
+			Class.forName("com.mysql.jdbc.Driver");
+			con=DriverManager.getConnection("jdbc:mysql://localhost:3306/PetRegistration", "root","root");
+			PreparedStatement ps=con.prepareStatement("insert into user (First_Name, Last_Name, Address,Email_Id, City,State,Pet_Name,Phone_Number, Pet_Type,Pets_Age) values(?,?,?,?,?,?,?,?,?,?)");
+			ps.setString(1, fname);
+			ps.setString(2, lname);
+			ps.setString(3, addr);
+			ps.setString(4, email);
+			ps.setString(5, city);
+			ps.setString(6, state);
+			ps.setString(7, pname);
+			ps.setString(8, pphone);
+			ps.setString(9, ptype);
+			ps.setInt(10, page);
+			int i=ps.executeUpdate();
+			if(i==1)
+			{
+				RequestDispatcher rd=request.getRequestDispatcher("/success.html");
+				rd.forward(request, response);
+			}
+		}
+		catch(Exception e)
+		{
+			System.out.println(e);
+		}
+		
+		
+	}
+
+}
+
+User.html
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Insert title here</title>
+</head>
+<body>
+<form method="post" action="http://localhost:8086/Demo/UserServlet">
+<table>
+<tr>
+<td>First Name</td>
+<td><input type="text" name="fname">
+</tr>
+</td>
+<tr>
+<td>Last Name</td>
+<td>
+<input type="text" name="lname">
+</td>
+</tr>
+<tr>
+<td>Address</td>
+<td><input type="text" name="addr">
+</td>
+</tr>
+<tr>
+<td>Email</td>
+<td>
+<input type="text" name="mail"></td>
+</tr>
+<tr>
+<td>City</td>
+<td><input type="text" name="city"></td>
+</tr>
+<tr>
+<td>State</td>
+<td><input type="text" name="state">
+</td>
+</tr>
+<tr>
+<td>Pet Name</td>
+<td><input type="text" name="pname"></td>
+</tr>
+<tr>
+<td>Phone Number</td>
+<td><input type="text" name="phone"></td>
+</tr>
+<tr>
+<td>Pet Type</td>
+<td><input type="text" name="ptype"></td>
+</tr>
+<tr>
+<td>Pet Age</td>
+<td><input type="text" name="page">
+</td>
+</tr>
+<tr>
+<td><input type="submit" value="submit">
+</td>
+</tr>
+</table>
+</form>
+</body>
+</html>
+
+success.html
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Insert title here</title>
+</head>
+<body>
+Inserted successfully
+</body>
+</html>
+
+PetRegistration Database
++--------------+-------------+------+-----+---------+-------+
+| Field        | Type        | Null | Key | Default | Extra |
++--------------+-------------+------+-----+---------+-------+
+| First_Name   | varchar(10) | YES  |     | NULL    |       |
+| Last_Name    | varchar(10) | YES  |     | NULL    |       |
+| Address      | varchar(50) | YES  |     | NULL    |       |
+| Email_Id     | varchar(20) | YES  |     | NULL    |       |
+| City         | varchar(20) | YES  |     | NULL    |       |
+| State        | varchar(10) | YES  |     | NULL    |       |
+| Pet_Name     | varchar(11) | YES  |     | NULL    |       |
+| Phone_Number | int(11)     | YES  |     | NULL    |       |
+| Pet_Type     | char(10)    | YES  |     | NULL    |       |
+| Pets_Age     | int(10)     | YES  |     | NULL    |       |
++--------------+-------------+------+-----+---------+-------+
